@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module UPS
   PACKAGING = {
     '01' => 'UPS Letter',
@@ -23,5 +25,5 @@ module UPS
     '65' => 'Media Mail',
     '66' => 'BPM Flat',
     '67' => 'Standard Flat'
-  }
+  }.freeze
 end

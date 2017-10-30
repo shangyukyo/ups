@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module UPS
   module Exceptions
     class InvalidUrlException < StandardError; end

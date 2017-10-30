@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module UPS
   SERVICES = {
     '01' => 'Next Day Air',
@@ -17,5 +19,5 @@ module UPS
     '84' => 'UPS Today Intercity',
     '85' => 'UPS Today Express',
     '86' => 'UPS Today Express Saver'
-  }
+  }.freeze
 end

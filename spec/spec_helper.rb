@@ -1,5 +1,5 @@
-require 'codeclimate-test-reporter'
-CodeClimate::TestReporter.start
+require 'simplecov'
+SimpleCov.start
 
 path = File.expand_path('../../', __FILE__)
 require "#{path}/lib/ups.rb"
@@ -11,9 +11,7 @@ ENV['UPS_PASSWORD'] = '' unless ENV.key? 'UPS_PASSWORD'
 ENV['UPS_ACCOUNT_NUMBER'] = '' unless ENV.key? 'UPS_ACCOUNT_NUMBER'
 
 require 'nokogiri'
-require 'minitest/spec'
 require 'minitest/autorun'
-require 'minitest/pride'
 
 require 'support/schema_path'
 require 'support/shipping_options'

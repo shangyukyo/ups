@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'ox'
 
 module UPS
@@ -80,7 +82,7 @@ module UPS
       #
       # @return [Ox::Element] XML representation of address_line_2 address part
       def address_line_2
-        data = (opts.key? :address_line_2) ? opts[:address_line_2][0..34] : ''
+        data = opts.key?(:address_line_2) ? opts[:address_line_2][0..34] : ''
         element_with_value('AddressLine2', data)
       end
 
@@ -122,6 +124,7 @@ module UPS
       # Returns an XML representation of a UPS Address
       #
       # @return [Ox::Element] XML representation of the current object
+      # rubocop:disable Metrics/AbcSize
       def to_xml
         Element.new('Address').tap do |address|
           address << address_line_1
@@ -133,6 +136,7 @@ module UPS
           address << country
         end
       end
+      # rubocop:enable Metrics/AbcSize
     end
   end
 end

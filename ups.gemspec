@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require File.expand_path('../lib/ups/version', __FILE__)
 
 Gem::Specification.new do |gem|
@@ -14,11 +16,11 @@ Gem::Specification.new do |gem|
 
   gem.required_rubygems_version = '>= 1.3.6'
 
-  gem.add_runtime_dependency 'ox', '>= 2.2', '<= 2.4.0'
-  gem.add_runtime_dependency 'typhoeus', '~> 1.0.0'
-  gem.add_runtime_dependency 'insensitive_hash', '~> 0.3.3'
-  gem.add_runtime_dependency 'levenshtein-ffi', '~> 1.1'
+  gem.add_runtime_dependency 'insensitive_hash'
+  gem.add_runtime_dependency 'levenshtein-ffi'
+  gem.add_runtime_dependency 'ox'
+  gem.add_runtime_dependency 'typhoeus'
 
-  gem.files        = `git ls-files`.split($OUTPUT_RECORD_SEPARATOR)
+  gem.files        = Dir['lib/**/*.rb']
   gem.require_path = 'lib'
 end
