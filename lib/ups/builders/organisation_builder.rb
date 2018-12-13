@@ -25,17 +25,24 @@ module UPS
       # @option opts [String] :state State
       # @option opts [String] :postal_code Zip or Postal Code
       # @option opts [String] :country Country
-      def initialize(name, opts = {})
-        self.name = name
+      def initialize(name, opts = {})        
+        self.name = name        
         self.opts = opts
       end
 
       # Returns an XML representation of company_name
       #
       # @return [Ox::Element] XML representation of company_name
-      def company_name
-        element_with_value('CompanyName', opts[:company_name][0..34])
-      end
+      # def company_name
+      #   element_with_value('CompanyName', opts[:company_name][0..34])
+      # end
+
+      # Returns an XML representation of phone_number
+      #
+      # @return [Ox::Element] XML representation of phone_number
+      # def contact_name
+      #   element_with_value('Name', opts[:name][0..34])
+      # end      
 
       # Returns an XML representation of phone_number
       #
@@ -43,6 +50,10 @@ module UPS
       def phone_number
         element_with_value('PhoneNumber', opts[:phone_number][0..14])
       end
+
+      def company_name
+        element_with_value('CompanyName', opts[:company_name][0..34])
+      end      
 
       # Returns an XML representation of AttentionName for which we use company
       # name
@@ -65,7 +76,7 @@ module UPS
       # @return [Ox::Element] XML representation of the current object
       def to_xml
         Element.new(name).tap do |org|
-          org << company_name
+          org << company_name          
           org << phone_number
           org << attention_name
           org << address

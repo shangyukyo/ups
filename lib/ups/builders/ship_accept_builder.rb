@@ -9,7 +9,7 @@ module UPS
     # @author Paul Trippett
     # @since 0.1.0
     class ShipAcceptBuilder < BuilderBase
-      include Ox
+      include Ox      
 
       # Initializes a new {ShipAcceptBuilder} object
       #

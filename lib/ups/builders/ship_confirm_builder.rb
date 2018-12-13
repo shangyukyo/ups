@@ -16,8 +16,7 @@ module UPS
       # Initializes a new {ShipConfirmBuilder} object
       #
       def initialize
-        super 'ShipmentConfirmRequest'
-
+        super 'ShipmentConfirmRequest'        
         add_request 'ShipConfirm', 'validate'
       end
 
@@ -26,12 +25,24 @@ module UPS
       #
       # @return [void]
       def add_label_specification(format, size)
-        root << Element.new('LabelSpecification').tap do |label_spec|
+        root << Element.new('LabelSpecification').tap do |label_spec|          
           label_spec << label_print_method(format)
           label_spec << label_image_format(format)
           label_spec << label_stock_size(size)
-          label_spec << http_user_agent if gif?(format)
+          label_spec << http_user_agent if gif?(format)          
         end
+      end
+
+      # def add_label_links_indicator
+      #   shipment_root << Element.new('ShipmentServiceOptions').tap do |sso|
+      #     sso << Element.new('LabelDelivery').tap do |ld|
+      #       ld << element_with_value('LabelLinksIndicator', '0')
+      #     end
+      #   end
+      # end
+
+      def add_locale
+        shipment_root << element_with_value('Locale', '1')
       end
 
       # Adds a Service section to the XML document being built

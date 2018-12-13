@@ -19,7 +19,12 @@ module UPS
     TEST_URL = 'https://wwwcie.ups.com'
     LIVE_URL = 'https://onlinetools.ups.com'
 
-    RATE_PATH = '/ups.app/xml/Rate'
+    #JSON 
+    # TEST_URL = 'https://wwwcie.ups.com/webservices/'
+    # LIVE_URL = 'https://onlinetools.ups.com/webservices/'
+
+
+    RATE_PATH = '/ups.app/xml/Rate'    
     SHIP_CONFIRM_PATH = '/ups.app/xml/ShipConfirm'
     SHIP_ACCEPT_PATH = '/ups.app/xml/ShipAccept'
     ADDRESS_PATH = '/ups.app/xml/XAV'
@@ -48,14 +53,14 @@ module UPS
     #   {Builders::RateBuilder} object to use
     # @yield [rate_builder] A RateBuilder object for configuring
     #   the shipment information sent
-    def rates(rate_builder = nil)
+    def rates(rate_builder = nil)      
       if rate_builder.nil? && block_given?
         rate_builder = UPS::Builders::RateBuilder.new
         yield rate_builder
-      end
+      end         
 
       response = get_response_stream RATE_PATH, rate_builder.to_xml
-      UPS::Parsers::RatesParser.new.tap do |parser|
+      UPS::Parsers::RatesParser.new.tap do |parser|        
         Ox.sax_parse(parser, response)
       end
     end
@@ -70,28 +75,31 @@ module UPS
     #   {Builders::ShipConfirmBuilder} object to use
     # @yield [ship_confirm_builder] A ShipConfirmBuilder object for configuring
     #   the shipment information sent
-    def ship(confirm_builder = nil)
-      if confirm_builder.nil? && block_given?
-        confirm_builder = Builders::ShipConfirmBuilder.new
-        yield confirm_builder
-      end
-
-      confirm_response = make_confirm_request(confirm_builder)
-      return confirm_response unless confirm_response.success?
-
+    def ship(confirm_builder = nil)      
+      if confirm_builder.nil? && block_given?        
+        confirm_builder = Builders::ShipConfirmBuilder.new        
+        yield confirm_builder        
+      end      
+      confirm_response = make_confirm_request(confirm_builder)  
+      return confirm_response unless confirm_response.success?      
       accept_builder = build_accept_request_from_confirm(confirm_builder,
                                                          confirm_response)
-      make_accept_request accept_builder
+      make_accept_request accept_builder      
     end
 
     private
 
-    def build_url(path)
+    def build_url(path)  
+      puts url
+      puts "***** url"    
       "#{url}#{path}"
     end
 
-    def get_response_stream(path, body)
-      response = Typhoeus.post(build_url(path), body: body)
+    def get_response_stream(path, body)      
+      response = Typhoeus.post(build_url(path), body: body)                  
+      File.open('/Users/macbookpro/Workspaces/ups_response', 'wb') do |f|
+        f.write response.body
+      end
       StringIO.new(response.body)
     end
 
@@ -107,8 +115,9 @@ module UPS
                         Parsers::ShipAcceptParser.new
     end
 
-    def make_ship_request(builder, path, ship_parser)
-      response = get_response_stream path, builder.to_xml
+    def make_ship_request(builder, path, ship_parser)              
+      response = get_response_stream path, builder.to_xml            
+      
       ship_parser.tap do |parser|
         Ox.sax_parse(parser, response)
       end
@@ -119,7 +128,7 @@ module UPS
         builder.add_access_request confirm_builder.license_number,
                                    confirm_builder.user_id,
                                    confirm_builder.password
-        builder.add_shipment_digest confirm_response.shipment_digest
+        builder.add_shipment_digest confirm_response.shipment_digest        
       end
     end
   end

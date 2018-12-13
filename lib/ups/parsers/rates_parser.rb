@@ -19,10 +19,10 @@ module UPS
         super
         return unless name == :RatedShipment
         rated_shipments << @current_rate.tap do |c|
-          if c.key? :negotiated_rate
-            c[:total] = c[:negotiated_rate]
-            c.delete :negotiated_rate
-          end
+          # if c.key? :negotiated_rate
+          #   c[:total] = c[:negotiated_rate]
+          #   c.delete :negotiated_rate
+          # end
         end
         @current_rate = {}
       end
@@ -31,14 +31,15 @@ module UPS
         super
         if switch_active?(:RatedShipment, :Service, :Code)
           parse_service_code value
-        elsif switch_active?(:RatedShipment, :TotalCharges)
+        elsif switch_active?(:RatedShipment, :TotalCharges, :MonetaryValue)
+          return if switch_active?(:RatedShipment, :RatedPackage, :TotalCharges, :MonetaryValue)
           parse_total_charges value
         elsif switch_active?(:RatedShipment, :NegotiatedRates, :MonetaryValue)
           parse_negotiated_rate value
         end
       end
 
-      def parse_negotiated_rate(value)
+      def parse_negotiated_rate(value)        
         @current_rate[:negotiated_rate] = value.as_s
       end
 

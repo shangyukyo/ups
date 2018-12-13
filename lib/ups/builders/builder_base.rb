@@ -22,7 +22,7 @@ module UPS
 
       attr_accessor :document,
                     :root,
-                    :shipment_root,
+                    :shipment_root,                    
                     :access_request,
                     :license_number,
                     :user_id,
@@ -32,13 +32,12 @@ module UPS
       #
       # @param [String] root_name The Name of the XML Root
       # @return [void]
-      def initialize(root_name)
+      def initialize(root_name)        
         initialize_xml_roots root_name
 
         document << access_request
-        document << root
-
-        yield self if block_given?
+        document << root        
+        yield self if block_given?        
       end
 
       # Initializes a new {BuilderBase} object
@@ -82,7 +81,7 @@ module UPS
       # @option opts [String] :country Country
       # @option opts [String] :shipper_number UPS Account Number
       # @return [void]
-      def add_shipper(opts = {})
+      def add_shipper(opts = {})        
         shipment_root << ShipperBuilder.new(opts).to_xml
       end
 
@@ -101,6 +100,16 @@ module UPS
         shipment_root << OrganisationBuilder.new('ShipTo', opts).to_xml
       end
 
+      def add_service(opts = {})
+        shipment_root << code_description('Service', opts[:service_token], opts[:service_name])
+      end
+
+      def add_invoice_line_total(opts = {})        
+        shipment_root << Element.new('InvoiceLineTotal').tap do |org|          
+          org << element_with_value('CurrencyCode', opts[:currency])          
+          org << element_with_value('MonetaryValue', opts[:total_amount].to_s)          
+        end
+      end
       # Adds a ShipFrom section to the XML document being built
       #
       # @param [Hash] opts A Hash of data to build the requested section
@@ -113,8 +122,9 @@ module UPS
       # @option opts [String] :country Country
       # @option opts [String] :shipper_number UPS Account Number
       # @return [void]
-      def add_ship_from(opts = {})
+      def add_ship_from(opts = {})        
         shipment_root << OrganisationBuilder.new('ShipFrom', opts).to_xml
+        shipment_root
       end
 
       # Adds a Package section to the XML document being built
@@ -123,10 +133,25 @@ module UPS
       # @return [void]
       def add_package(opts = {})
         shipment_root << Element.new('Package').tap do |org|
-          org << packaging_type
+          org << packaging_type(opts[:packaging_type])
           org << element_with_value('Description', 'Rate')
           org << package_weight(opts[:weight], opts[:unit])
+          org << dimensions(opts[:length], opts[:width], opts[:height])
+          org << package_service_options(opts)
         end
+      end
+
+      def add_num_of_pieces(num)
+        shipment_root << Element.new('NumOfPieces').tap do |org|
+          org << num.to_s
+        end
+      end
+
+      def add_shipment_total_weight(opts = {})
+        shipment_root << Element.new('ShipmentTotalWeight').tap do |org|
+          org << code_description('UnitOfMeasurement', opts[:unit], '')
+          org << element_with_value('Weight', opts[:weight].to_s)
+        end        
       end
 
       # Adds a PaymentInformation section to the XML document being built
@@ -143,16 +168,61 @@ module UPS
         end
       end
 
+
+      # Adds shipment service options 
+      # only applies commercial invoices
+
+      def add_shipment_service_options(opts = {})            
+        shipment_root << Element.new('ShipmentServiceOptions').tap do |sso|
+          sso << Element.new('InternationalForms').tap do |ifs|
+            ifs << element_with_value('FormType', '01')
+            ifs << element_with_value('InvoiceDate', opts[:created_at])
+            ifs << element_with_value('ReasonForExport', opts[:purpose])
+            ifs << element_with_value('CurrencyCode', 'USD') 
+
+            opts[:products].each do |product|
+              ifs << add_commercial_invoice(product)
+            end            
+          end
+        end
+      end
+
+      def add_commercial_invoice(product)            
+        Element.new('Product').tap do |p|
+          p << element_with_value('Description', product[:description])
+
+          p << Element.new('Unit').tap do |u|
+            u << element_with_value('Number', product[:quantity].to_s)
+            u << element_with_value('Value', product[:price].to_s)
+            u << code_description('UnitOfMeasurement', 'EA', '')                  
+          end
+
+          p << element_with_value('OriginCountryCode', product[:origin_country])
+
+          p << Element.new('ProductWeight').tap do |pw|
+            pw << code_description('UnitOfMeasurement', product[:weight_unit], '')
+            pw << element_with_value('Weight', (product[:weight] * product[:quantity]).round(2).to_s)
+          end
+        end                 
+      end
+
+
+      # Adds Sold To
+
+      def add_sold_to(options = {})
+        shipment_root << OrganisationBuilder.new('SoldTo', options).to_xml            
+      end
+
       # Adds a RateInformation/NegotiatedRatesIndicator section to the XML
       # document being built
       #
       # @return [void]
       def add_rate_information
-        shipment_root << Element.new('RateInformation').tap do |rate_info|
-          rate_info << element_with_value('NegotiatedRatesIndicator', '1')
+        shipment_root << Element.new('RateInformation').tap do |rate_info|          
+          rate_info << Element.new('NegotiatedRatesIndicator')
         end
       end
-
+      
       # Returns a String representation of the XML document being built
       #
       # @return [String]
@@ -162,22 +232,41 @@ module UPS
 
       private
 
-      def initialize_xml_roots(root_name)
+      def initialize_xml_roots(root_name)        
         self.document = Document.new
         self.root = Element.new(root_name)
         self.shipment_root = Element.new('Shipment')
-        self.access_request = Element.new('AccessRequest')
-        root << shipment_root
+        self.access_request = Element.new('AccessRequest')        
+        root << shipment_root        
       end
 
-      def packaging_type
-        code_description 'PackagingType', '02', 'Customer Supplied'
+      def packaging_type(type)
+        code_description 'PackagingType', type, 'Customer Supplied'
+      end
+
+      def package_service_options(opts = {})
+        pkg_service_opts = Element.new('PackageServiceOptions')        
+        if !opts[:signature_option].blank?
+          pkg_service_opts << Element.new('DeliveryConfirmation').tap do |dcis|
+            dcis << element_with_value('DCISType', opts[:signature_option])
+          end
+        end
+        pkg_service_opts
+      end
+
+      def dimensions(length, width, height)
+        Element.new('Dimensions').tap do |org|
+          org << code_description('UnitOfMeasurement', 'IN', '')
+          org << element_with_value('Length', length.to_s)
+          org << element_with_value('Width', width.to_s)
+          org << element_with_value('Height', height.to_s)
+        end
       end
 
       def package_weight(weight, unit)
         Element.new('PackageWeight').tap do |org|
           org << unit_of_measurement(unit)
-          org << element_with_value('Weight', weight)
+          org << element_with_value('Weight', weight.to_s)
         end
       end
 
@@ -190,7 +279,7 @@ module UPS
       def element_with_value(name, value)
         raise InvalidAttributeError, name unless value.respond_to?(:to_str)
         Element.new(name).tap do |request_action|
-          request_action << value.to_str
+          request_action << value.to_s
         end
       end
 

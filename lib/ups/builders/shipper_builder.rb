@@ -34,15 +34,15 @@ module UPS
       #
       # @return [Ox::Element] XML representation of shipper_name
       def shipper_name
-        element_with_value('Name', opts[:company_name])
+        element_with_value('Name', opts[:name])
       end
 
       # Returns an XML representation of company_name
       #
       # @return [Ox::Element] XML representation of company_name
-      def company_name
-        element_with_value('CompanyName', opts[:company_name])
-      end
+      # def company_name
+      #   element_with_value('CompanyName', opts[:company_name])
+      # end
 
       # Returns an XML representation of company_name
       #
@@ -78,8 +78,7 @@ module UPS
       def to_xml
         Element.new('Shipper').tap do |org|
           org << shipper_name
-          org << attention_name
-          org << company_name
+          org << attention_name          
           org << phone_number
           org << shipper_number
           org << address

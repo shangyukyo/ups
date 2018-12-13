@@ -14,9 +14,8 @@ module UPS
       # Initializes a new {RateBuilder} object
       #
       def initialize
-        super 'RatingServiceSelectionRequest'
-
-        add_request('Rate', 'Shop')
+        super 'RatingServiceSelectionRequest'        
+        add_request('Rate', 'Shop')        
       end
     end
   end
