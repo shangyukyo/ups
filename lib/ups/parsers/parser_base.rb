@@ -15,8 +15,8 @@ module UPS
         self.switches = {}
       end
 
-      def start_element(name)
-        element_tracker_switch name, true
+      def start_element(name)        
+        element_tracker_switch name, true        
       end
 
       def end_element(name)

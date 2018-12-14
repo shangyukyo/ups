@@ -247,6 +247,7 @@ module UPS
       def package_service_options(opts = {})
         pkg_service_opts = Element.new('PackageServiceOptions')        
         if !opts[:signature_option].blank?
+          puts "signature_option ********************"
           pkg_service_opts << Element.new('DeliveryConfirmation').tap do |dcis|
             dcis << element_with_value('DCISType', opts[:signature_option])
           end

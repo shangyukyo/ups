@@ -27,6 +27,7 @@ module UPS
     RATE_PATH = '/ups.app/xml/Rate'    
     SHIP_CONFIRM_PATH = '/ups.app/xml/ShipConfirm'
     SHIP_ACCEPT_PATH = '/ups.app/xml/ShipAccept'
+    VOID_SHIP_PATH = '/ups.app/xml/Void'
     ADDRESS_PATH = '/ups.app/xml/XAV'
 
     DEFAULT_PARAMS = {
@@ -58,7 +59,7 @@ module UPS
         rate_builder = UPS::Builders::RateBuilder.new
         yield rate_builder
       end         
-
+      puts rate_builder.to_xml
       response = get_response_stream RATE_PATH, rate_builder.to_xml
       UPS::Parsers::RatesParser.new.tap do |parser|        
         Ox.sax_parse(parser, response)
@@ -87,6 +88,19 @@ module UPS
       make_accept_request accept_builder      
     end
 
+    def void(void_ship_builder = nil)
+      if void_ship_builder.nil? && block_given?
+        void_ship_builder = UPS::Builders::VoidShipBuilder.new
+        yield void_ship_builder
+      end         
+      puts void_ship_builder.to_xml.inspect
+
+      response = get_response_stream VOID_SHIP_PATH, void_ship_builder.to_xml
+      UPS::Parsers::VoidShipParser.new.tap do |parser|        
+        Ox.sax_parse(parser, response)
+      end   
+    end
+
     private
 
     def build_url(path)  
@@ -95,11 +109,13 @@ module UPS
       "#{url}#{path}"
     end
 
-    def get_response_stream(path, body)      
+    def get_response_stream(path, body)            
       response = Typhoeus.post(build_url(path), body: body)                  
+
       File.open('/Users/macbookpro/Workspaces/ups_response', 'wb') do |f|
         f.write response.body
       end
+
       StringIO.new(response.body)
     end
 
