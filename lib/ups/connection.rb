@@ -59,7 +59,7 @@ module UPS
         rate_builder = UPS::Builders::RateBuilder.new
         yield rate_builder
       end         
-      puts rate_builder.to_xml
+      
       response = get_response_stream RATE_PATH, rate_builder.to_xml
       UPS::Parsers::RatesParser.new.tap do |parser|        
         Ox.sax_parse(parser, response)
@@ -93,7 +93,7 @@ module UPS
         void_ship_builder = UPS::Builders::VoidShipBuilder.new
         yield void_ship_builder
       end         
-      puts void_ship_builder.to_xml.inspect
+      
 
       response = get_response_stream VOID_SHIP_PATH, void_ship_builder.to_xml
       UPS::Parsers::VoidShipParser.new.tap do |parser|        
