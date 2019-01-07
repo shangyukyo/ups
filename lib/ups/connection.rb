@@ -111,11 +111,6 @@ module UPS
 
     def get_response_stream(path, body)            
       response = Typhoeus.post(build_url(path), body: body)                  
-
-      File.open('/Users/macbookpro/Workspaces/ups_response', 'wb') do |f|
-        f.write response.body
-      end
-
       StringIO.new(response.body)
     end
 
