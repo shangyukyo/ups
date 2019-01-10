@@ -4,6 +4,7 @@ require 'uri'
 require 'typhoeus'
 require 'digest/md5'
 require 'ox'
+require 'rest-client'
 
 module UPS
   # The {Connection} class acts as the main entry point to performing rate and
@@ -29,6 +30,7 @@ module UPS
     SHIP_ACCEPT_PATH = '/ups.app/xml/ShipAccept'
     VOID_SHIP_PATH = '/ups.app/xml/Void'
     ADDRESS_PATH = '/ups.app/xml/XAV'
+    PICKUP_PATH = '/rest/Pickup'
 
     DEFAULT_PARAMS = {
       test_mode: false
@@ -64,6 +66,26 @@ module UPS
       UPS::Parsers::RatesParser.new.tap do |parser|        
         Ox.sax_parse(parser, response)
       end
+    end
+
+    def pickup(pickup_builder = nil)      
+      if pickup_builder.nil? && block_given?
+        pickup_builder = UPS::Builders::PickupBuilder.new
+        yield pickup_builder
+      end         
+      
+      puts pickup_builder.json_pickup_request
+      get_json_response PICKUP_PATH, pickup_builder.json_pickup_request
+    end
+
+    def pickup_cancel(pickup_builder = nil)      
+      if pickup_builder.nil? && block_given?
+        pickup_builder = UPS::Builders::PickupBuilder.new
+        yield pickup_builder
+      end
+
+      puts pickup_builder.json_pickup_cancel_request
+      get_json_response PICKUP_PATH, pickup_builder.json_pickup_cancel_request
     end
 
     # Makes a request to ship a package
@@ -112,6 +134,11 @@ module UPS
     def get_response_stream(path, body)            
       response = Typhoeus.post(build_url(path), body: body)                  
       StringIO.new(response.body)
+    end
+
+    def get_json_response(path, body)
+      response = RestClient.post(build_url(path), body)
+      JSON.parse(response)
     end
 
     def make_confirm_request(confirm_builder)

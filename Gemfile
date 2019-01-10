@@ -7,5 +7,5 @@ group :development, :test do
   gem 'codeclimate-test-reporter', require: nil
   gem 'minitest'
   gem 'nokogiri'
-  gem 'rake'
+  gem 'rake'  
 end

@@ -21,7 +21,7 @@ module UPS
     autoload :RatesParser,         'ups/parsers/rates_parser'
     autoload :ShipConfirmParser,   'ups/parsers/ship_confirm_parser'
     autoload :ShipAcceptParser,    'ups/parsers/ship_accept_parser'
-    autoload :VoidShipParser,      'ups/parsers/void_ship_parser'
+    autoload :VoidShipParser,      'ups/parsers/void_ship_parser'    
   end
 
   module Builders
@@ -33,5 +33,6 @@ module UPS
     autoload :OrganisationBuilder, 'ups/builders/organisation_builder'
     autoload :ShipperBuilder,      'ups/builders/shipper_builder'
     autoload :VoidShipBuilder,     'ups/builders/void_ship_builder'
+    autoload :PickupBuilder,       'ups/builders/pickup_builder'
   end
 end
