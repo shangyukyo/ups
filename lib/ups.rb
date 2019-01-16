@@ -34,5 +34,6 @@ module UPS
     autoload :ShipperBuilder,      'ups/builders/shipper_builder'
     autoload :VoidShipBuilder,     'ups/builders/void_ship_builder'
     autoload :PickupBuilder,       'ups/builders/pickup_builder'
+    autoload :TrackBuilder,        'ups/builders/track_builder'
   end
 end

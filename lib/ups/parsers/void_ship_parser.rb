@@ -22,31 +22,22 @@ module UPS
         @current_package = {}        
       end        
 
-      def value(value)
-        puts "********* value"
+      def value(value)        
         super
-        if switch_active?(:VoidShipmentResponse, :Status, :StatusCode)
-          puts "********* value11"
+        if switch_active?(:VoidShipmentResponse, :Status, :StatusCode)          
           return if switch_active?(:VoidShipmentResponse, :PackageLevelResults)
-          puts "*********** value 22"
-          puts "*******5"
           self.status = success?(value.as_s)
-        elsif switch_active?(:VoidShipmentResponse, :PackageLevelResults)
-          puts "*******6"
+        elsif switch_active?(:VoidShipmentResponse, :PackageLevelResults)          
           parse_package value
         end        
       end
 
-      def parse_package(value)
-        puts "*******1"
-        if switch_active?(:VoidShipmentResponse, :PackageLevelResults, :TrackingNumber)
-          puts "*******2"
+      def parse_package(value)        
+        if switch_active?(:VoidShipmentResponse, :PackageLevelResults, :TrackingNumber)          
           @current_package[:tracking_number] = value.as_s
-        elsif switch_active?(:VoidShipmentResponse, :PackageLevelResults, :StatusCode)
-          puts "*******3"
+        elsif switch_active?(:VoidShipmentResponse, :PackageLevelResults, :StatusCode)          
           @current_package[:status] = success?(value.as_s)
-        end
-        puts "*******4"
+        end        
       end
 
 

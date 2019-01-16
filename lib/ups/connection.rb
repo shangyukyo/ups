@@ -31,6 +31,7 @@ module UPS
     VOID_SHIP_PATH = '/ups.app/xml/Void'
     ADDRESS_PATH = '/ups.app/xml/XAV'
     PICKUP_PATH = '/rest/Pickup'
+    TRACK_PATH  = '/rest/Track'
 
     DEFAULT_PARAMS = {
       test_mode: false
@@ -83,11 +84,20 @@ module UPS
         pickup_builder = UPS::Builders::PickupBuilder.new
         yield pickup_builder
       end
-
-      puts pickup_builder.json_pickup_cancel_request
+      
       get_json_response PICKUP_PATH, pickup_builder.json_pickup_cancel_request
     end
 
+
+    def track(track_builder = nil)
+      if track_builder.nil? && block_given?
+        track_builder = UPS::Builders::TrackBuilder.new
+        yield track_builder
+      end         
+      
+      puts track_builder.json_track_request
+      get_json_response TRACK_PATH, track_builder.json_track_request
+    end
     # Makes a request to ship a package
     #
     # A pre-configured {Builders::ShipConfirmBuilder} object can be passed as
@@ -103,6 +113,7 @@ module UPS
         confirm_builder = Builders::ShipConfirmBuilder.new        
         yield confirm_builder        
       end      
+      
       confirm_response = make_confirm_request(confirm_builder)  
       return confirm_response unless confirm_response.success?      
       accept_builder = build_accept_request_from_confirm(confirm_builder,
