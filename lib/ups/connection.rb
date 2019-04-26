@@ -69,7 +69,7 @@ module UPS
       end
     end
 
-    def pickup(pickup_builder = nil)      
+    def pickup(pickup_builder = nil)          
       if pickup_builder.nil? && block_given?
         pickup_builder = UPS::Builders::PickupBuilder.new
         yield pickup_builder
@@ -114,7 +114,9 @@ module UPS
         yield confirm_builder        
       end      
       
+
       confirm_response = make_confirm_request(confirm_builder)  
+
       return confirm_response unless confirm_response.success?      
       accept_builder = build_accept_request_from_confirm(confirm_builder,
                                                          confirm_response)

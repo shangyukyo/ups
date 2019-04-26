@@ -84,7 +84,7 @@ module UPS
       def add_piece(pieces)        
         @pickup_creation_request['PickupPiece'] = pieces.map{ |piece|
           {
-            'ServiceCode' => '%03d' % piece[:service_token].to_s,
+            'ServiceCode' => '%03d' % piece[:service_token].to_i,
             'Quantity' => piece[:quantity].to_s,
             'DestinationCountryCode' => piece[:country],
             'ContainerCode' => piece[:packing_type]
