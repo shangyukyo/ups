@@ -122,6 +122,14 @@ module UPS
         element_with_value('CountryCode', opts[:country][0..1])
       end
 
+      def residential_indicator
+        element_with_value('ResidentialAddressIndicator', 'True')
+      end
+
+      def residential
+        element_with_value('ResidentialAddress', 'True')
+      end
+
       # Returns an XML representation of email
       #
       # @return [Ox::Element] XML representation of the email address
@@ -143,6 +151,15 @@ module UPS
           address << state
           address << postal_code
           address << country
+
+          if opts[:residential_indicator]
+            address << residential_indicator
+          end
+
+          if opts[:residential]
+            address << residential
+          end
+
         end
       end
       # rubocop:enable Metrics/AbcSize

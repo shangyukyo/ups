@@ -61,9 +61,10 @@ module UPS
       if rate_builder.nil? && block_given?
         rate_builder = UPS::Builders::RateBuilder.new
         yield rate_builder
-      end         
+      end      
       
       response = get_response_stream RATE_PATH, rate_builder.to_xml
+
       UPS::Parsers::RatesParser.new.tap do |parser|        
         Ox.sax_parse(parser, response)
       end
