@@ -251,6 +251,14 @@ module UPS
             dcis << element_with_value('DCISType', opts[:signature_option])
           end
         end
+
+        if !opts[:insured_value].blank?
+          pkg_service_opts << Element.new('InsuredValue').tap do |insured_value|
+            insured_value << element_with_value('CurrencyCode', opts[:insured_value][:currency])
+            insured_value << element_with_value('MonetaryValue', opts[:insured_value][:amount].to_s)
+          end          
+        end
+
         pkg_service_opts
       end
 

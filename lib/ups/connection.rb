@@ -62,7 +62,8 @@ module UPS
         rate_builder = UPS::Builders::RateBuilder.new
         yield rate_builder
       end      
-      
+
+
       response = get_response_stream RATE_PATH, rate_builder.to_xml
 
       UPS::Parsers::RatesParser.new.tap do |parser|        
@@ -140,8 +141,6 @@ module UPS
     private
 
     def build_url(path)  
-      puts url
-      puts "***** url"    
       "#{url}#{path}"
     end
 
