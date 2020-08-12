@@ -76,8 +76,7 @@ module UPS
         pickup_builder = UPS::Builders::PickupBuilder.new
         yield pickup_builder
       end         
-      
-      puts pickup_builder.json_pickup_request
+            
       get_json_response PICKUP_PATH, pickup_builder.json_pickup_request
     end
 
@@ -114,10 +113,10 @@ module UPS
       if confirm_builder.nil? && block_given?        
         confirm_builder = Builders::ShipConfirmBuilder.new        
         yield confirm_builder        
-      end      
-      
+      end                  
 
       confirm_response = make_confirm_request(confirm_builder)  
+
 
       return confirm_response unless confirm_response.success?      
       accept_builder = build_accept_request_from_confirm(confirm_builder,
@@ -144,7 +143,7 @@ module UPS
       "#{url}#{path}"
     end
 
-    def get_response_stream(path, body)            
+    def get_response_stream(path, body)        
       response = Typhoeus.post(build_url(path), body: body)                  
       StringIO.new(response.body)
     end
@@ -168,7 +167,6 @@ module UPS
 
     def make_ship_request(builder, path, ship_parser)              
       response = get_response_stream path, builder.to_xml            
-      
       ship_parser.tap do |parser|
         Ox.sax_parse(parser, response)
       end

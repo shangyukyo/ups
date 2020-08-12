@@ -22,13 +22,15 @@ module UPS
         @current_rate = {}
       end
 
-      def value(value)
+      def value(value)        
         super
         if switch_active?(:RatedShipment, :Service, :Code)
           parse_service_code value
         elsif switch_active?(:RatedShipment, :TotalCharges, :MonetaryValue)
           return if switch_active?(:RatedShipment, :RatedPackage, :TotalCharges, :MonetaryValue)
           parse_total_charges value
+        elsif switch_active?(:RatedShipment, :TotalCharges, :CurrencyCode)
+          parse_currency_code value
         elsif switch_active?(:RatedShipment, :NegotiatedRates, :NetSummaryCharges, :GrandTotal, :MonetaryValue)
           parse_negotiated_rate value
         end
@@ -45,6 +47,10 @@ module UPS
 
       def parse_total_charges(value)
         @current_rate[:total] = value.as_s
+      end
+
+      def parse_currency_code(value)
+        @current_rate[:currency] = value.as_s
       end
     end
   end
