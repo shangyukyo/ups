@@ -70,12 +70,12 @@ module UPS
           "StateProvince" => opts[:state],
           "PostalCode"  => opts[:postal_code],
           "CountryCode" => opts[:country],
-          "ResidentialIndicator" => 'N',
-          "SpecialInstruction"  => opts[:package_location],
+          "ResidentialIndicator" => 'N',          
           "Phone" => {
             "Number"  => opts[:phone_number]
           }
         }
+        @pickup_creation_request["SpecialInstruction"]  = opts[:package_location]
       end
 
       def add_alternate_address_indicator        
