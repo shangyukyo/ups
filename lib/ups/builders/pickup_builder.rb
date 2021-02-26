@@ -71,6 +71,7 @@ module UPS
           "PostalCode"  => opts[:postal_code],
           "CountryCode" => opts[:country],
           "ResidentialIndicator" => 'N',
+          "SpecialInstruction"  => opts[:package_location],
           "Phone" => {
             "Number"  => opts[:phone_number]
           }
