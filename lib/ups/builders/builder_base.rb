@@ -136,9 +136,17 @@ module UPS
           org << packaging_type(opts[:packaging_type])
           org << element_with_value('Description', 'Rate')
           org << package_weight(opts[:weight], opts[:unit])
-          org << dimensions(opts[:length], opts[:width], opts[:height])
+          if opts[:packaging_type] != '01'
+            org << dimensions(opts[:length], opts[:width], opts[:height])
+          end
           org << package_service_options(opts)
         end
+
+        if opts[:packaging_type] == '01'
+          shipment_root << element_with_value('DocumentsOnlyIndicator', '')
+        end
+
+        puts Ox.to_xml(shipment_root)
       end
 
       def add_num_of_pieces(num)
