@@ -127,7 +127,7 @@ module UPS
       end
 
       def residential
-        element_with_value('ResidentialAddress', 'True')
+        element_with_value('ResidentialAddress', '1')
       end
 
       # Returns an XML representation of email
