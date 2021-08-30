@@ -123,7 +123,7 @@ module UPS
       end
 
       def residential_indicator
-        element_with_value('ResidentialAddressIndicator', 'True')
+        element_with_value('ResidentialAddressIndicator', '1')
       end
 
       def residential
@@ -152,7 +152,7 @@ module UPS
           address << postal_code
           address << country
 
-          if opts[:residential_indicator]
+          if opts[:residential]
             address << residential_indicator
           end
 
