@@ -63,7 +63,6 @@ module UPS
         yield rate_builder
       end      
 
-
       response = get_response_stream RATE_PATH, rate_builder.to_xml
 
       UPS::Parsers::RatesParser.new.tap do |parser|        
@@ -115,6 +114,8 @@ module UPS
         yield confirm_builder        
       end                  
 
+      puts confirm_builder.to_xml
+      puts '&&&&&'
       confirm_response = make_confirm_request(confirm_builder)  
 
 

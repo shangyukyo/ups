@@ -188,14 +188,16 @@ module UPS
             ifs << element_with_value('ReasonForExport', opts[:purpose])
             ifs << element_with_value('CurrencyCode', 'USD') 
 
-            if opts[:saturday_delivery]
-              ifs << element_with_value('SaturdayDelivery', '1') 
-            end
-
             opts[:products].each do |product|
               ifs << add_commercial_invoice(product)
             end            
-          end
+          end        
+        end
+      end
+
+      def add_saturday_delivery_service_options
+        shipment_root << Element.new('ShipmentServiceOptions').tap do |sso|
+          sso << element_with_value('SaturdayDelivery', '1') 
         end
       end
 
