@@ -188,12 +188,25 @@ module UPS
             ifs << element_with_value('ReasonForExport', opts[:purpose])
             ifs << element_with_value('CurrencyCode', 'USD') 
 
+            if opts[:aes].present?
+              ifs << Element.new('EEIFilingOption').tap do |eei|
+                # eei << element_with_value('Code', '2')
+                eei << Element.new('ShipperFiled').tap do |shipper_field|
+                  shipper_field << element_with_value('Code', 'A')
+                  shipper_field << element_with_value('PreDepartureITNNumber', opts[:aes])                
+                  # shipper_field << element_with_value('Code', 'A')
+                  # shipper_field << element_with_value('EEIShipmentReferenceNumber', 'X20230308844647')
+                end
+              end
+            end
+
             opts[:products].each do |product|
               ifs << add_commercial_invoice(product)
             end            
           end        
         end
       end
+
 
       def add_saturday_delivery_service_options
         shipment_root << Element.new('ShipmentServiceOptions').tap do |sso|

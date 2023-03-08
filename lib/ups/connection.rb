@@ -65,6 +65,8 @@ module UPS
 
       response = get_response_stream RATE_PATH, rate_builder.to_xml
 
+      puts  response.string
+      puts "**" * 100
       UPS::Parsers::RatesParser.new.tap do |parser|        
         Ox.sax_parse(parser, response)
       end
