@@ -80,6 +80,14 @@ module UPS
           org << phone_number
           org << attention_name
           org << address
+
+          if name == 'ShipFrom' and opts[:tax_id].present?
+            org << element_with_value('TaxIdentificationNumber', opts[:tax_id])
+            org << Element.new('TaxIDType').tap do |tax_id_type|
+              tax_id_type << element_with_value('Code', 'EIN')
+              tax_id_type << element_with_value('Description', opts[:tax_id])
+            end
+          end
         end
       end
     end

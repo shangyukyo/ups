@@ -189,13 +189,24 @@ module UPS
             ifs << element_with_value('CurrencyCode', 'USD') 
 
             if opts[:aes].present?
+              ifs << element_with_value('FormType', '11')
               ifs << Element.new('EEIFilingOption').tap do |eei|
-                # eei << element_with_value('Code', '2')
+                eei << element_with_value('Code', '1')
                 eei << Element.new('ShipperFiled').tap do |shipper_field|
                   shipper_field << element_with_value('Code', 'A')
-                  shipper_field << element_with_value('PreDepartureITNNumber', opts[:aes])                
-                  # shipper_field << element_with_value('Code', 'A')
-                  # shipper_field << element_with_value('EEIShipmentReferenceNumber', 'X20230308844647')
+                  shipper_field << element_with_value('PreDepartureITNNumber', opts[:aes])
+                end
+              end
+
+              ifs << element_with_value('InBondCode', '70')
+              ifs << Element.new('Contacts').tap do |contact|                
+                contact << Element.new('UltimateConsignee').tap do |uc|
+                  uc << Element.new('UltimateConsigneeType').tap do |uct|
+                    uct << element_with_value('Code', 'D')                    
+                  end
+
+                  uc << element_with_value('CompanyName', opts[:ship_to][:company_name][0..34])
+                  uc << AddressBuilder.new(opts[:ship_to]).to_xml
                 end
               end
             end
@@ -206,7 +217,6 @@ module UPS
           end        
         end
       end
-
 
       def add_saturday_delivery_service_options
         shipment_root << Element.new('ShipmentServiceOptions').tap do |sso|
