@@ -42,7 +42,7 @@ module UPS
       # end
 
       def add_locale
-        shipment_root << element_with_value('Locale', '1')
+        # shipment_root << element_with_value('Locale', '1')
       end
 
       # Adds a Service section to the XML document being built
