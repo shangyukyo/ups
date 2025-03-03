@@ -188,6 +188,10 @@ module UPS
             ifs << element_with_value('ReasonForExport', opts[:purpose])
             ifs << element_with_value('CurrencyCode', 'USD') 
 
+            if opts[:incoterm].present?
+              ifs << element_with_value('TermsOfShipment', opts[:incoterm]) 
+            end
+
             if opts[:aes].present?
               ifs << element_with_value('FormType', '11')
               ifs << Element.new('EEIFilingOption').tap do |eei|
@@ -232,6 +236,10 @@ module UPS
             u << element_with_value('Number', product[:quantity].to_s)
             u << element_with_value('Value', product[:price].to_s)
             u << code_description('UnitOfMeasurement', 'EA', '')                  
+          end
+
+          if product[:extras][:hs_code].present?
+            p << element_with_value('CommodityCode', product[:extras][:hs_code])
           end
 
           p << element_with_value('OriginCountryCode', product[:origin_country])
