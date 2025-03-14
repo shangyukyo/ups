@@ -88,6 +88,15 @@ module UPS
               tax_id_type << element_with_value('Description', opts[:tax_id])
             end
           end
+
+          if ['ShipTo', 'SoldTo'].include?(name) and opts[:tax_id].present?
+            org << element_with_value('TaxIdentificationNumber', opts[:tax_id])
+            org << Element.new('TaxIDType').tap do |tax_id_type|
+              tax_id_type << element_with_value('Code', 'VAT')
+              tax_id_type << element_with_value('Description', opts[:tax_id])
+            end
+          end
+
         end
       end
     end
